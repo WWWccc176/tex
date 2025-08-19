@@ -1,0 +1,213 @@
+\documentclass{article}
+
+% --- PACKAGES ---
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={A Report on an Advanced Sieving Algorithm},
+    pdfpagemode=FullScreen,
+}
+\usepackage{sectsty}
+\sectionfont{\fontsize{14}{15}\selectfont}
+\subsectionfont{\fontsize{12}{15}\selectfont}
+
+% --- TITLE and AUTHOR ---
+\title{\textbf{A Report on an Advanced Sieving Algorithm \\ with DualBasis centers and Voronoi Cells}}
+
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+In the original article, when the sieve method is applied, the centers of the filters are randomly selected, which exhibited a high 
+degree of randomness and was non-reproducible. Moreover, the filtration condition involves a large amount of overlapping regions in the 
+spherical caps. Both factors lead to a waste of computing power. Therefore, two feasible improvement methods are proposed: using the 
+dual lattice and the enumerated low-norm vectors as sieve centers, and adopting a purely algebraic method for filtration. This approach 
+is reproducible and can optimize the computing power requirements to a certain extent.
+\end{abstract}
+
+\section{Introduction and Motivation}
+
+Sieving algorithms are fundamental tools in lattice-based cryptography, primarily used for solving the Shortest Vector Problem (SVP). Their performance is critical for the practical security analysis of lattice-based schemes. The bgj3 algorithm (Algorithm \ref{alg:bgj3_report}) represents a significant milestone, but its reliance on random projections introduces several challenges:
+
+\begin{itemize}
+    \item \textbf{Probabilistic Nature:} Non-reproducible, the probability of finding good vector pairs depends on random selection.
+    \item \textbf{Redundant Computations:} Randomly chosen spherical caps can heavily overlap, causing the same vector pairs to be tested repeatedly.
+    \item \textbf{Inefficiency:} The process is agnostic to the underlying algebraic structure of the lattice, missing key optimization opportunities.
+\end{itemize}
+
+To address these limitations, we propose a new hybrid algorithm that is deterministic, structurally aware, and designed for efficient 
+implementation. The following is the original algorithm.
+
+\begin{algorithm}[H]
+\caption{AllPairSearch - bgj3 (Baseline)} \label{alg:bgj3_report}
+\begin{algorithmic}[1]
+\Require{A list $L$ of $N_0$ lattice vectors, repetitions $(B_0, B_1, B_2)$, radii $(\alpha_0, \alpha_1, \alpha_2)$, goal norm $l$.}
+\Ensure{A list of reducing pairs in $L$.}
+\State $\mathcal{N} \gets \emptyset$
+\For{$i = 0, \ldots, B_0 - 1$}
+    \State Pick a random center $c_0$ from $S^{n-1}$
+    \State Compute $L_i \gets \{ v \in L \mid v \text{ passes } F_{c_0, \alpha_0} \}$
+    \For{$j = 0, \ldots, B_1/B_0 - 1$}
+        \State Pick a random center $c_1$ from $S^{n-1}$
+        \State $L_{ij} \gets \{ v \in L_i \mid v \text{ passes } F_{c_1, \alpha_1} \}$
+        \For{$k = 0, \ldots, B_2/B_1 - 1$}
+            \State Pick a random center $c_2$ from $S^{n-1}$
+            \State $L_{ijk} \gets \{ v \in L_{ij} \mid v \text{ passes } F_{c_2, \alpha_2} \}$
+            \State $\mathcal{N} \gets \mathcal{N} \cup \{ (u, v) \in L_{ijk}^2 \mid \|u \pm v\| < l \}$
+        \EndFor
+    \EndFor
+\EndFor
+\State \Return $\mathcal{N}$
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Design Philosophy and Evolution}
+
+The core of our new approach is to replace randomness with deterministic, structurally-informed choices. 
+
+\subsection{The Role of the Dual Lattice}
+The dual lattice $\mathcal{L}(\mathbf{B}^{\vee})$ provides a powerful analytical tool. For a vector $\mathbf{v} \in \mathcal{L}(\mathbf{B})$ and a dual vector $\mathbf{u} \in \mathcal{L}(\mathbf{B}^{\vee})$, their inner product $\langle \mathbf{v}, \mathbf{u} \rangle$ is always an integer. This property allows us to define sharp, algebraic filters instead of fuzzy, geometric ones. If two vectors $\mathbf{v}_a$ and $\mathbf{v}_b$ are close, i.e., $\|\mathbf{v}_a - \mathbf{v}_b\| \to 0$, then for any dual vector $\mathbf{u}$, the difference in their inner products $\langle \mathbf{v}_a, \mathbf{u} \rangle - \langle \mathbf{v}_b, \mathbf{u} \rangle = \langle \mathbf{v}_a - \mathbf{v}_b, \mathbf{u} \rangle$ will be a small integer. This insight is the foundation of our coarse-sieving phase.
+
+\subsection{Evolution of Center Generation}
+A critical component of advanced sieve is the set of center vectors used for partitioning. 
+Our design evolved through the following stages:
+
+\begin{enumerate}
+    \item \textbf{Initial Idea (Linear Combinations):} My first thought was to generate a rich set of center vectors by 
+    taking short integer linear combinations of the dual basis vectors $\mathbf{b}_i^{\vee}$. This approach is flexible 
+    and can theoretically produce a dense set of centers.
+    \item \textbf{Encountered Problem (Computational Cost):} However, generating, managing, and ensuring the quality (i.e., 
+    short norm and good angular distribution) of these combinations on-the-fly was computationally intensive. 
+    It introduced significant overhead that probabily threatened to negate the benefits of the deterministic approach.
+    \item \textbf{Final Strategy (Enumeration):} I pivoted to a more stable and efficient method: enumerating a large pool of the 
+    shortest dual lattice vectors up to a certain norm bound. This is achieved using a standard lattice enumeration algorithm 
+    (e.g. KFP, SE,\ldots). This method has several advantages:
+        \begin{itemize}
+            \item It guarantees that we obtain the absolute shortest vectors in all directions.
+            \item The generation is a one-time cost(although it requires complex calculation).
+            \item The resulting pool of vectors can be sorted by norm, providing a ready-made, high-quality source of centers for the subsequent partitioning phase.
+\end{itemize}
+\end{enumerate}
+This evolution led to the robust, two-phase structure of the final algorithm.
+
+\section{The Hybrid Sieve Algorithm}
+
+The final algorithm (Algorithm \ref{alg:hybrid_sieve_final}) integrates the insights above. 
+
+\begin{algorithm}[H]
+\caption{AllPairSearch with Hybrid Sieve} \label{alg:hybrid_sieve_final}
+\begin{algorithmic}[1]
+\Require{
+    The LLL-reduced basis $\mathbf{B}$; A list $L_0$ of vectors; A goal norm $\ell$;
+    Number of repetitions for each level $(B_0, B_1, B_2)$;
+    Total number of enumerated centers $N_{\text{enum-c}}$;
+    Coarse-sieve integer range $K_{\text{rangeCoarse}}$.
+}
+\Ensure{A list $N_{out}$ of reducing pairs.}
+\State $N_{out} \gets \emptyset$
+\Statex
+\Statex \textbf{Phase 1: Preparation}
+\State $\mathbf{B}^{\vee} \gets \text{DualBasis}(\mathbf{B})$
+\State $R_{enum\_c}=1.2\lambda _1(\mathcal{L}(B^\vee)) $
+\State $C_{\text{dense\_pool}} \gets \text{EnumerateShortDualVectors}(\mathbf{B}^{\vee}, N_{\text{enum-c}}, R_{enum\_c})$
+\State Sort $C_{\text{dense\_pool}}$ by increasing norm.
+\Statex
+
+\Statex \textbf{Phase 3: Hierarchical Partitioning with Interleaved Centers}
+\State $K \gets 3$ \Comment{The number of hierarchical levels}
+\State $num\_c0 \gets B_0$
+\State $num\_c1 \gets B_1 / B_0$
+\State $num\_c2 \gets B_2 / B_1$
+\State $N_{\text{total\_centers}} \gets num\_c0 + num\_c1 + num\_c2$
+\Statex
+\State $C_0, C_1, C_2\ \gets \emptyset$ 
+\For{$i \gets 0$ to $N_{\text{total\_centers}} - 1$}
+    \State $\text{target\_layer} \gets i \pmod K$ \Comment{Deal centers like dealing cards}
+    \If{$\text{target\_layer} == 0$ and $|C_0| < num\_c0$}
+        \State $C_0 \gets C_0 \cup \{C_{\text{dense\_pool}}[i]\}$
+    \ElsIf{$\text{target\_layer} == 1$ and $|C_1| < num\_c1$}
+        \State $C_1 \gets C_1 \cup \{C_{\text{dense\_pool}}[i]\}$
+    \ElsIf{$\text{target\_layer} == 2$ and $|C_2| < num\_c2$}
+        \State $C_2 \gets C_2 \cup \{C_{\text{dense\_pool}}[i]\}$
+    \EndIf
+\EndFor
+\Statex
+
+% The main loop structure remains the same, as it now operates on the
+% well-constructed, disjoint, and balanced center sets C0, C1, C2.
+\For{each $\mathbf{c}_0 \in C_0$}
+    \State $L_i \gets \{\mathbf{v} \in L' \mid \text{FindClosestVector}(\mathbf{v}, C_0) == \mathbf{c}_0\}$
+    \If{$|L_i| \le 1$} \textbf{continue} \EndIf
+    \For{each $\mathbf{c}_1 \in C_1$}
+        \State $L_{ij} \gets \{\mathbf{v} \in L_i \mid \text{FindClosestVector}(\mathbf{v}, C_1) == \mathbf{c}_1\}$
+        \If{$|L_{ij}| \le 1$} \textbf{continue} \EndIf
+        \For{each $\mathbf{c}_2 \in C_2$}
+            \State $L_{ijk} \gets \{\mathbf{v} \in L_{ij} \mid \text{FindClosestVector}(\mathbf{v}, C_2) == \mathbf{c}_2\}$
+            \If{$|L_{ijk}| > 1$}
+                \State $N_{out} \gets N_{out} \cup \{ (u, v) \in L_{ijk}^2 \mid u \neq v, \|u \pm v\| < l \}$
+            \EndIf
+        \EndFor
+    \EndFor
+\EndFor
+\State \Return $N_{out}$
+
+
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Key Advantages and Discussion}
+
+The hybrid algorithm offers significant advantages over traditional methods:
+
+\begin{enumerate}
+    \item \textbf{Deterministic and Reproducible:} The algorithm is fully deterministic. Given the same input, it will always 
+    produce the same output, which is quite valuable for complexity analysis and debugging.
+    \item \textbf{Structurally Informed:} The coarse sieve (Phase 2) leverages the fundamental algebraic properties of the lattice, 
+    filtering from a "structural perspective" to retain only vectors that lie near specific hyperplanes defined by the shortest dual 
+    vectors. This is far more effective reducing "bad vectors".
+    \item \textbf{Efficient Partitioning:} The hierarchical filtering (Phase 3) uses a finite set of pre-computed, 
+    high-quality centers. The partitioning function, `FindClosestVector`, is a simple linear scan over a small set of 
+    centers, having a low complexity of $O(B_i \cdot n)$.
+    \item \textbf{Non-overlapping Partitions:} The Voronoi-cell-based partitioning ensures that each vector is assigned to 
+    exactly one bucket at each level. This completely eliminates the redundant computations that plague the overlapping spherical 
+    caps of the bgj3 algorithm.
+    \item \textbf{Parameter Cohesion:} A key design feature is the direct link between the repetition parameters $(B_0, B_1, B_2)$ and the number of centers used at each level. The vectors for partitioning are allocated to each layer all at once during the preparation phase, making the algorithm's behavior clear and controllable.
+\end{enumerate}
+
+\subsection{Implementation Note: Handling Overlapping Vectors}
+In the partitioning phase, it's possible for a vector to be share the same distance to two or more centers in a set $C_i$. 
+A deterministic tie-breaking rule (e.g. choosing the center with smaller lexicographical order) is necessary to 
+ensure each vector is assigned to a unique bucket. 
+
+\section{Conclusion}
+
+The Hybrid Sieve algorithm could be a step forward from probabilistic sieving techniques. By systematically replacing randomness with 
+deterministic, structurally-aware mechanisms, it achieves superior efficiency and control. The final algorithm presents a powerful and 
+practical framework for solving the Shortest Vector Problem(SVP), promising substantial performance improvements in real-world cryptographic 
+analysis.
+
+\appendix
+\section{Conceptual Helper Functions}
+\begin{itemize}
+    \item \textbf{DualBasis($\mathbf{B}$):} Computes the basis $\mathbf{B}^{\vee}$ for the dual lattice $\mathcal{L}(\mathbf{B}^{\vee})$.
+    \item \textbf{EnumerateShortDualVectors($\mathbf{B}^{\vee}, N_{\text{enum-c}}, R_{enum\_c}$):} Runs a lattice enumeration algorithm to find the $N_{\text{enum-c}}$ shortest non-zero vectors in $\mathcal{L}(\mathbf{B}^{\vee})$.
+    \item \textbf{FindClosestVector($\mathbf{v}, C_{\text{set}}$):} Finds the vector in the \textbf{finite set} $C_{\text{set}}$ that is closest to $\mathbf{v}$ (in Euclidean distance). This is a simple linear scan over the elements of $C_{\text{set}}$, with a deterministic tie-breaking rule.
+\end{itemize}
+
+\end{document}

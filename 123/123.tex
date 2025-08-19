@@ -1,0 +1,177 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{ctex}
+
+\begin{document}
+
+\section*{斐波那契数列的矩阵方法求解第 $n$ 项函数}
+
+斐波那契数列 $\{F_n\}$ 定义如下：
+\begin{itemize}
+    \item $F_0 = 0$
+    \item $F_1 = 1$
+    \item $F_n = F_{n-1} + F_{n-2}$  对于 $n \ge 2$
+\end{itemize}
+我们的目标是找到一个使用矩阵运算来计算 $F_n$ 的函数表达式。
+
+\subsection*{1. 建立矩阵递推关系}
+
+Let's consider the aquation:
+$\begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix}$ 和 $\begin{pmatrix} F_{n-1} \\ F_{n-2} \end{pmatrix}$。 我们希望找到一个 2 \times 2$ 的矩阵 $\mathbf{M}$，使得：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix} = \mathbf{M} \begin{pmatrix} F_{n-1} \\ F_{n-2} \end{pmatrix} $$
+为了满足斐波那契数列的递推关系，我们得到矩阵 $\mathbf{M}$ 为：
+$$ \mathbf{M} = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix} $$
+验证矩阵方程：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix} = \begin{pmatrix} 1 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} F_{n-1} \\ F_{n-2} \end{pmatrix} = \begin{pmatrix} 1 \cdot F_{n-1} + 1 \cdot F_{n-2} \\ 1 \cdot F_{n-1} + 0 \cdot F_{n-2} \end{pmatrix} = \begin{pmatrix} F_{n-1} + F_{n-2} \\ F_{n-1} \end{pmatrix} = \begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix} $$
+
+\subsection*{2. 迭代矩阵递推关系}
+
+迭代应用矩阵方程：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix} = \mathbf{M} \begin{pmatrix} F_{n-1} \\ F_{n-2} \end{pmatrix} = \mathbf{M}^2 \begin{pmatrix} F_{n-2} \\ F_{n-3} \end{pmatrix} = \cdots = \mathbf{M}^{n-1} \begin{pmatrix} F_1 \\ F_0 \end{pmatrix} $$
+使用初始值 $F_1 = 1$ 和 $F_0 = 0$，得到：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \end{pmatrix} = \mathbf{M}^{n-1} \begin{pmatrix} 1 \\ 0 \end{pmatrix} $$
+
+\subsection*{3. 求矩阵 $\mathbf{M}$ 的特征值和特征向量}
+
+特征方程为 $\det(\mathbf{M} - \lambda \mathbf{I}) = 0$:
+$$ \det(\mathbf{M} - \lambda \mathbf{I}) = \det \begin{pmatrix} 1-\lambda & 1 \\ 1 & -\lambda \end{pmatrix} = (1-\lambda)(-\lambda) - (1)(1) = \lambda^2 - \lambda - 1 = 0 $$
+解二次方程得到特征值 $\lambda_{1,2} = \frac{1 \pm \sqrt{5}}{2}$。
+令 $\lambda_1 = \phi = \frac{1 + \sqrt{5}}{2}$ 和 $\lambda_2 = 1-\phi = \frac{1 - \sqrt{5}}{2}$.
+
+对于 $\lambda_1 = \phi$，特征向量 $\mathbf{v}_1 = \begin{pmatrix} \phi \\ 1 \end{pmatrix}$。
+对于 $\lambda_2 = 1-\phi$，特征向量 $\mathbf{v}_2 = \begin{pmatrix} 1-\phi \\ 1 \end{pmatrix}$.
+
+\subsection*{4. 构建矩阵 $\mathbf{P}$, $\mathbf{D}$, 和 $\mathbf{P}^{-1}$}
+
+令 $\mathbf{P} = \begin{pmatrix} \phi & 1-\phi \\ 1 & 1 \end{pmatrix}$ 和 $\mathbf{D} = \begin{pmatrix} \phi & 0 \\ 0 & 1-\phi \end{pmatrix}$.
+计算 $\det(\mathbf{P}) = \phi \cdot 1 - (1-\phi) \cdot 1 = 2\phi - 1 = \sqrt{5}$.
+逆矩阵 $\mathbf{P}^{-1} = \frac{1}{\sqrt{5}} \begin{pmatrix} 1 & - (1-\phi) \\ -1 & \phi \end{pmatrix} = \frac{1}{\sqrt{5}} \begin{pmatrix} 1 & \phi-1 \\ -1 & \phi \end{pmatrix}$.
+
+\subsection*{5. 计算 $\mathbf{M}^{n-1} = \mathbf{P} \mathbf{D}^{n-1} \mathbf{P}^{-1}$}
+
+$\mathbf{D}^{n-1} = \begin{pmatrix} \phi^{n-1} & 0 \\ 0 & (1-\phi)^{n-1} \end{pmatrix}$.
+$$ \mathbf{M}^{n-1} = \mathbf{P} \mathbf{D}^{n-1} \mathbf{P}^{-1} = \frac{1}{\sqrt{5}} \begin{pmatrix} \phi & 1-\phi \\ 1 & 1 \end{pmatrix} \begin{pmatrix} \phi^{n-1} & 0 \\ 0 & (1-\phi)^{n-1} \end{pmatrix} \begin{pmatrix} 1 & \phi-1 \\ -1 & \phi \end{pmatrix} $$
+$$ = \frac{1}{\sqrt{5}} \begin{pmatrix} \phi^n & (1-\phi)^n \\ \phi^{n-1} & (1-\phi)^{n-1} \end{pmatrix} \begin{pmatrix} 1 & \phi-1 \\ -1 & \phi \end{pmatrix} $$
+$F_n$ 是 $\mathbf{M}^{n-1}$ 的第一列第一个元素：
+$$ F_n = (\mathbf{M}^{n-1})_{11} = \frac{1}{\sqrt{5}} \left( \phi^n \cdot 1 + (1-\phi)^n \cdot (-1) \right) = \frac{1}{\sqrt{5}} \left( \phi^n - (1-\phi)^n \right) $$
+
+\subsection*{6. 斐波那契数列第 $n$ 项的函数表达式 (Binet's Formula)}
+
+$$ F_n = \frac{1}{\sqrt{5}} \left( \left( \frac{1 + \sqrt{5}}{2} \right)^n - \left( \frac{1 - \sqrt{5}}{2} \right)^n \right) $$
+
+这就是斐波那契数列第 $n$ 项的 Binet's Formula。
+
+
+\section*{三项和递推数列的矩阵方法求解第 $n$ 项函数}
+
+考虑数列 $\{F_n\}$，前三项为 $F_0 = 0, F_1 = 0, F_2 = 1$，递推关系为 $F_n = F_{n-1} + F_{n-2} + F_{n-3}$ 对于 $n \ge 3$。
+
+\subsection*{1. 建立矩阵递推关系}
+
+对于三项和递推关系，我们需要扩展状态向量以包含前三项。我们考虑向量 $\begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix}$ 和 $\begin{pmatrix} F_{n-1} \\ F_{n-2} \\ F_{n-3} \end{pmatrix}$。 我们希望找到一个 \$3 \times 3$ 的矩阵 $\mathbf{M}$，使得：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \mathbf{M} \begin{pmatrix} F_{n-1} \\ F_{n-2} \\ F_{n-3} \end{pmatrix} $$
+为了满足递推关系 $F_n = F_{n-1} + F_{n-2} + F_{n-3}$，矩阵 $\mathbf{M}$ 的第一行乘以向量 $\begin{pmatrix} F_{n-1} \\ F_{n-2} \\ F_{n-3} \end{pmatrix}$ 应该得到 $F_{n-1} + F_{n-2} + F_{n-3}$。  因此，$\mathbf{M}$ 的第一行应该是 $\begin{pmatrix} 1 & 1 & 1 \end{pmatrix}$。
+
+为了得到 $F_{n-1} = F_{n-1} + 0 \cdot F_{n-2} + 0 \cdot F_{n-3}$，矩阵 $\mathbf{M}$ 的第二行应该是 $\begin{pmatrix} 1 & 0 & 0 \end{pmatrix}$。
+
+为了得到 $F_{n-2} = 0 \cdot F_{n-1} + 1 \cdot F_{n-2} + 0 \cdot F_{n-3}$，矩阵 $\mathbf{M}$ 的第三行应该是 $\begin{pmatrix} 0 & 1 & 0 \end{pmatrix}$。
+
+所以，我们得到矩阵 $\mathbf{M}$ 为：
+$$ \mathbf{M} = \begin{pmatrix} 1 & 1 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix} $$
+验证矩阵方程：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \begin{pmatrix} 1 & 1 & 1 \\ 1 & 0 & 0 \\ 0 & 1 & 0 \end{pmatrix} \begin{pmatrix} F_{n-1} \\ F_{n-2} \\ F_{n-3} \end{pmatrix} = \begin{pmatrix} F_{n-1} + F_{n-2} + F_{n-3} \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} $$
+
+\subsection*{2. 迭代矩阵递推关系}
+
+迭代应用矩阵方程：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \mathbf{M} \begin{pmatrix} F_{n-1} \\ F_{n-2} \\ F_{n-3} \end{pmatrix} = \mathbf{M}^2 \begin{pmatrix} F_{n-2} \\ F_{n-3} \\ F_{n-4} \end{pmatrix} = \cdots = \mathbf{M}^{n-2} \begin{pmatrix} F_2 \\ F_1 \\ F_0 \end{pmatrix} $$
+对于 $n \ge 2$，我们有：
+$$ \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \mathbf{M}^{n-2} \begin{pmatrix} F_2 \\ F_1 \\ F_0 \end{pmatrix} = \mathbf{M}^{n-2} \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} $$
+
+\subsection*{3. 求矩阵 $\mathbf{M}$ 的特征值}
+
+特征方程为 $\det(\mathbf{M} - \lambda \mathbf{I}) = 0$:
+$$ \det(\mathbf{M} - \lambda \mathbf{I}) = \det \begin{pmatrix} 1-\lambda & 1 & 1 \\ 1 & -\lambda & 0 \\ 0 & 1 & -\lambda \end{pmatrix} = (1-\lambda) \det \begin{pmatrix} -\lambda & 0 \\ 1 & -\lambda \end{pmatrix} - 1 \det \begin{pmatrix} 1 & 0 \\ 0 & -\lambda \end{pmatrix} + 1 \det \begin{pmatrix} 1 & -\lambda \\ 0 & 1 \end{pmatrix} $$
+$$ = (1-\lambda) (\lambda^2 - 0) - 1 (-\lambda - 0) + 1 (1 - 0) = \lambda^2 - \lambda^3 + \lambda + 1 = -\lambda^3 + \lambda^2 + \lambda + 1 = 0 $$
+或者 $\lambda^3 - \lambda^2 - \lambda - 1 = 0$.
+设 $\lambda_1, \lambda_2, \lambda_3$ 为此三次方程的三个根。 (求解三次方程根比较复杂，此处我们假设已经求出)
+
+\subsection*{4. 使用特征值分解 (假设 $\mathbf{M}$ 可对角化)}
+
+假设矩阵 $\mathbf{M}$ 可对角化，则存在可逆矩阵 $\mathbf{P}$ 和对角矩阵 $\mathbf{D} = \begin{pmatrix} \lambda_1 & 0 & 0 \\ 0 & \lambda_2 & 0 \\ 0 & 0 & \lambda_3 \end{pmatrix}$ 使得 $\mathbf{M} = \mathbf{P} \mathbf{D} \mathbf{P}^{-1}$。
+则 $\mathbf{M}^{n-2} = \mathbf{P} \mathbf{D}^{n-2} \mathbf{P}^{-1}$，其中 $\mathbf{D}^{n-2} = \begin{pmatrix} \lambda_1^{n-2} & 0 & 0 \\ 0 & \lambda_2^{n-2} & 0 \\ 0 & 0 & \lambda_3^{n-2} \end{pmatrix}$.
+
+\subsection*{5. 计算 $F_n$}
+
+$$ \begin{pmatrix} F_n \\ F_{n-1} \\ F_{n-2} \end{pmatrix} = \mathbf{M}^{n-2} \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} = \mathbf{P} \mathbf{D}^{n-2} \mathbf{P}^{-1} \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} $$
+$F_n$ 将是矩阵 $\mathbf{M}^{n-2}$ 的第一列的第一个元素。  设 $\mathbf{P}^{-1} = [c_{ij}]_{3\times 3}$， $\mathbf{P} = [p_{ij}]_{3\times 3}$。
+令 $\mathbf{v} = \mathbf{P}^{-1} \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} = \begin{pmatrix} c_{11} \\ c_{21} \\ c_{31} \end{pmatrix}$.
+则 $\mathbf{D}^{n-2} \mathbf{v} = \begin{pmatrix} \lambda_1^{n-2} c_{11} \\ \lambda_2^{n-2} c_{21} \\ \lambda_3^{n-2} c_{31} \end{pmatrix}$.
+最后 $\mathbf{M}^{n-2} \begin{pmatrix} 1 \\ 0 \\ 0 \end{pmatrix} = \mathbf{P} (\mathbf{D}^{n-2} \mathbf{v}) = \begin{pmatrix} p_{11} & p_{12} & p_{13} \\ p_{21} & p_{22} & p_{23} \\ p_{31} & p_{32} & p_{33} \end{pmatrix} \begin{pmatrix} \lambda_1^{n-2} c_{11} \\ \lambda_2^{n-2} c_{21} \\ \lambda_3^{n-2} c_{31} \end{pmatrix} = \begin{pmatrix} p_{11} \lambda_1^{n-2} c_{11} + p_{12} \lambda_2^{n-2} c_{21} + p_{13} \lambda_3^{n-2} c_{31} \\ \cdots \\ \cdots \end{pmatrix}$
+
+因此，
+$$ F_n = p_{11} c_{11} \lambda_1^{n-2} + p_{12} c_{21} \lambda_2^{n-2} + p_{13} c_{31} \lambda_3^{n-2} $$
+令 $A = p_{11} c_{11}, B = p_{12} c_{21}, C = p_{13} c_{31}$. 则
+$$ F_n = A \lambda_1^{n-2} + B \lambda_2^{n-2} + C \lambda_3^{n-2}, \quad n \ge 2 $$
+需要通过初始条件 $F_2=1, F_3=F_2+F_1+F_0=1, F_4=F_3+F_2+F_1=2$ (或 $F_2, F_3, F_4$) 来确定系数 $A, B, C$。
+对于 $n=2, 3, 4$:
+$$ F_2 = A \lambda_1^{0} + B \lambda_2^{0} + C \lambda_3^{0} = A + B + C = 1 $$
+$$ F_3 = A \lambda_1^{1} + B \lambda_2^{1} + C \lambda_3^{1} = A \lambda_1 + B \lambda_2 + C \lambda_3 = 1 $$
+$$ F_4 = A \lambda_1^{2} + B \lambda_2^{2} + C \lambda_3^{2} = 2 $$
+解这个线性方程组可以得到 $A, B, C$ 的值。
+
+\subsection*{6. 斐波那契数列第 $n$ 项的函数表达式}
+
+最终，斐波那契数列第 $n$ 项的函数表达式为：
+$$ F_n = \begin{cases} 0, & \text{if } n = 0, 1 \\ A \lambda_1^{n-2} + B \lambda_2^{n-2} + C \lambda_3^{n-2}, & \text{if } n \ge 2 \end{cases} $$
+其中 $\lambda_1, \lambda_2, \lambda_3$ 是 $\lambda^3 - \lambda^2 - \lambda - 1 = 0$ 的根，系数 $A, B, C$ 由初始条件确定。
+
+\section*{n项和递推数列的矩阵方法求解第 $k$ 项函数}
+
+考虑数列 $\{F_k\}$，其递推关系是 **m项和** 的形式：
+$$ F_k = F_{k-1} + F_{k-2} + \cdots + F_{k-m} $$
+对于 $k \ge m$，并给定前 $m$ 项初始值 $F_0, F_1, \ldots, F_{m-1}$。
+
+\subsection*{1. 建立矩阵递推关系}
+
+定义状态向量为：
+$$ \mathbf{v}_k = \begin{pmatrix} F_k \\ F_{k-1} \\ \vdots \\ F_{k-m+1} \end{pmatrix} $$
+构建 $m \times m$ 的矩阵 $\mathbf{M}$ 使得 $\mathbf{v}_k = \mathbf{M} \mathbf{v}_{k-1}$:
+$$ \mathbf{M} = \begin{pmatrix}
+1 & 1 & 1 & \cdots & 1 \\
+1 & 0 & 0 & \cdots & 0 \\
+0 & 1 & 0 & \cdots & 0 \\
+0 & 0 & 1 & \cdots & 0 \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+0 & 0 & 0 & \cdots & 0
+\end{pmatrix} $$
+其中，第一行全为 1，第二行到第 m 行，对角线下方一个位置为 1，其余为 0。
+
+\subsection*{2. 迭代矩阵递推关系}
+
+迭代关系为：
+$$ \mathbf{v}_k = \mathbf{M}^{k-m+1} \mathbf{v}_{m-1} $$
+初始状态向量为：
+$$ \mathbf{v}_{m-1} = \begin{pmatrix} F_{m-1} \\ F_{m-2} \\ \vdots \\ F_0 \end{pmatrix} $$
+
+\subsection*{3. 特征值分解}
+
+1.  求解特征方程 $\det(\mathbf{M} - \lambda \mathbf{I}) = 0$，得到特征值 $\lambda_1, \lambda_2, \ldots, \lambda_m$。
+2.  求对应于每个特征值的特征向量。
+3.  构建矩阵 $\mathbf{P}$ (特征向量作为列) 和对角矩阵 $\mathbf{D} = \text{diag}(\lambda_1, \lambda_2, \ldots, \lambda_m)$。
+4.  计算 $\mathbf{P}^{-1}$。
+
+\subsection*{4. 计算 $\mathbf{M}^{k-m+1}$ 和 $F_k$}
+
+$$ \mathbf{M}^{k-m+1} = \mathbf{P} \mathbf{D}^{k-m+1} \mathbf{P}^{-1} $$
+$$ \mathbf{v}_k = \mathbf{M}^{k-m+1} \mathbf{v}_{m-1} = \mathbf{P} \mathbf{D}^{k-m+1} \mathbf{P}^{-1} \mathbf{v}_{m-1} $$
+$F_k$ 是结果向量 $\mathbf{v}_k$ 的第一个元素。
+
+\subsection*{5. 斐波那契数列第 $k$ 项的函数表达式}
+
+如果 $\mathbf{M}$ 可对角化，则 $F_k$ 的函数表达式为：
+$$ F_k = C_1 \lambda_1^{k-m+1} + C_2 \lambda_2^{k-m+1} + \cdots + C_m \lambda_m^{k-m+1}, \quad k \ge m-1 $$
+其中 $\lambda_1, \lambda_2, \ldots, \lambda_m$ 是矩阵 $\mathbf{M}$ 的特征值，系数 $C_1, C_2, \ldots, C_m$ 由初始条件 $F_0, F_1, \ldots, F_{m-1}$ 确定。  通过解线性方程组来确定系数。
+
+\end{document}
