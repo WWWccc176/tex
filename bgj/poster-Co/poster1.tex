@@ -1,0 +1,215 @@
+\documentclass[25pt,a0paper,portrait]{tikzposter}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{blindtext}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{adjustbox}
+
+\usetheme{Rays}
+\graphicspath{{Images/}}
+
+\title{AI Methods for Post-Quantum Cryptography}
+\author{
+  Supervisor: Keqin Liu\\
+  Members: Bo Wang, Yuan Cheng, Xingyue Fan, Yongrun Huang, Chang Liu, Jialun Luo, Yexi Ren
+}
+\institute{CODE: SURF-2025-0061}
+\date{August 2025}
+
+\makeatletter
+  % 设置标题区占页面宽度的比例
+  % 默认 \TP@titlewidth = \paperwidth
+  \setlength\TP@titlewidth{0.8\paperwidth}   
+  
+  % 设置标题区高度（默认大约 9.5cm-10cm 左右，具体看字体大小）
+  \setlength\TP@titleheight{5.5cm}             
+  
+  % 内部边距，如果需要文字离边框更远/更近，可调这个
+  \TP@titleinnersep = 1.1em
+  % \setlength\TP@titleinnersep{1.5cm}       
+\makeatother
+\begin{document}
+
+\maketitle
+
+\node[anchor=west,  xshift= -2.2cm] at (TP@title.west)
+  {\includegraphics[width=0.15\paperwidth]{XJTLU1.png}};
+\node[anchor=east,  xshift= 2cm] at (TP@title.east)
+  {\includegraphics[width=0.13\paperwidth]{SURFwb.png}};
+
+
+
+\block{Abstract}{
+   This poster presents the background and a series of possible evolutionary methods of sieving algorithm-bgj3). We begin with reproducing the original random 
+  filtering method, then introduce a deterministic Hybrid-Sieve to replace the randomness with the algebraic structure of 
+  the dual lattice. Finally, we explore a powerful shift using Reinforcement Learning (RL), where an intelligent agent learns 
+  to produce high quality center sieve vectors. 
+}
+
+\begin{columns}
+  \column{0.55}
+    \block{1. Introduction and Basic Knowledge}{
+      % --- Start of the Poster Section Code ---
+
+We begin by introducing three foundational elements that frame the methods and results that follow:
+
+\medskip
+\textbf{Lattice:}
+A lattice in $\mathbb{R}^n$ is the discrete set of all integer linear combinations of basis vectors $b_1,\ldots,b_n$:
+\[
+\mathcal{L} =\Bigl\{\sum_{i=1}^{n} x_i b_i \;\Big|\; x _i\in \mathbb{Z} \Bigr\}.
+\]
+The basis is not unique; its density is captured by the determinant $\det(\mathcal{L} )=\lvert\det([b_1\,\cdots\,b_n])\rvert$.
+Lattice problems form the foundation of many post-quantum schemes.
+
+\medskip
+\textbf{Shortest Vector Problem:}
+Given a basis of $\mathcal{L}$, the task is to find a nonzero vector of minimum Euclidean norm:
+\[
+v^{\star} \in \operatorname*{arg\,min}_{v \in \mathcal{L}  \setminus \{\mathbf{0}\}} \|v\|_2 .
+\]
+SVP is believed to be hard in high dimensions and underlies the security of lattice-based cryptography (e.g., SIS/LWE, NTRU).
+Related problems include the Closest Vector Problem (CVP) and Bounded Distance Decoding (BDD).
+
+\medskip
+\textbf{LLL Algorithm:}
+The Lenstra–Lenstra–Lovász algorithm runs in polynomial time to produce a reduced basis with shorter, nearly orthogonal vectors.
+It uses Gram–Schmidt coefficients $\mu_{i,j}$, size reduction ($|\mu_{i,j}|\le 1/2$), and the Lovász condition with $\delta\in(1/4,1)$.
+A classical guarantee is $\|b_1\|\le 2^{\frac{(n-1)}{2}}\lambda_1(\mathcal{L})$, where $b_1$ is the first vector of the LLL-reduced basis. LLL is a standard pre-processing step for approximating SVP and for cryptanalysis (e.g., as a front-end to BKZ and sieving).
+
+\medskip
+These concepts underpin modern lattice algorithms: SVP sets the target, and LLL conditions the basis for practical
+approximations. Building on these foundations, we study and refine sieving methods and sketch RL-based extensions.
+}
+
+\block{3. Algorithmic Enhancements}{
+
+  We introduce two gradually deepening improvements to 
+  \textsc{AllPairSearch}(bgj3):
+
+  \begin{enumerate}
+    \item \textbf{Deterministic Voronoi Multi-Level Sieve:}
+      \begin{itemize}
+        \item \textbf{Enumerated Dual Centers:}
+          Precompute the top $N_{\rm enum}$ shortest vectors of the dual
+          lattice $\mathcal{L}^\vee$ (via enumeration) as all sieve centers, replacing random picked center vectors.
+        \item \textbf{Algebraic Pre‐filtering.}
+          Exploit the algebraic structure of $\mathcal{L}^\vee$ (inner‐product bounds, norm relations)
+          to perform a coarse sieve that discards vectors provably far from any optimal center with 
+        \item \textbf{Voronoi Partitioning:}
+          Split centers into disjoint sets $C_0,C_1,C_2$ (by $(B_0,B_1,B_2)$)
+          and assign each vector to exactly one bucket via its closest center:\ $min \|\mathbf{v}\pm \mathbf{c}_i\|_2$
+      \end{itemize}
+      \textbf{Key Benefits:}
+      \begin{itemize}
+        \item \emph{Reproducible \& Deterministic.}
+        \item \emph{Zero Overlap.}  Voronoi buckets are strictly disjoint. 
+        \item \emph{Controlled Complexity.}
+          Cost per level $O\bigl(|L|\cdot|C_i|\cdot n\bigr)$, lower than random caps. Friendly to the requirements of computing time and RAM.
+      \end{itemize}
+
+    \item \textbf{Reinforcement Learning–Based Center Selection:}
+      \begin{itemize}
+        \item \textbf{RL Environment:}
+        State $s_t=[c_1^{(t)},\dots,c_n^{(t)}]\in\mathbb{Z}^n$;\\
+        action $a_t\in\{c_i^+,c_i^-\}$;\\
+        reward $R_t=\|\mathbf v_t\|^2-\|\mathbf v_{t+1}\|^2$.
+        \item \textbf{Policy Network:}
+          A multi‐layer perceptron $f_\theta$ outputs
+          $\pi_\theta(a_t\mid s_t)$ over the action set.
+        \item \textbf{Policy Optimization:}
+          Use REINFORCE to maximize
+          $J(\theta)=\mathbb{E}_{S\sim d}[v_\pi(S)]$,\\ updating
+          $\theta\leftarrow\theta+\alpha\,\nabla_\theta\ln\pi_\theta(a_t|s_t)\,q_t$.
+        \item \textbf{Application:}
+          The trained agent proposes high‐quality sieve centers on the
+          dual lattice.
+      \end{itemize}
+      \textbf{Key Benefits:}
+      \begin{itemize}
+        \item \emph{Adaptive Selection.} Learns to pick centers that drive
+          faster convergence.
+        \item \emph{Memory Efficient.} Avoids storing large random cap tables
+          by focusing on promising lattice directions.
+      \end{itemize}
+
+  \end{enumerate}
+}
+    
+
+  \column{0.45}
+\block{2. Algorithms Re-implementation}{%
+  % 整体字号
+  \small
+  % 取消多余段前/段后距离
+  \setlength{\parskip}{0pt}%
+  \setlength{\parsep}{0pt}%
+
+  We adopted a combination of Python and C++ in Kaggle to reproduce the results of Prof.Ding's paper under the constraint of limited memory. The algorithms include the classical \textbf{sieving algorithm}, a \textbf{refined BGJ15}, and \textbf{bgj3} with a three-stage filtering scheme.
+  Our training data comes from websites that generate random n-dimensional Lattice:
+  https://www.latticechallenge.org/lwe_challenge/challenge.php 
+  
+  The following is the pseudocode of the original bgj3-algorithm:
+
+  % 算法标题，下面用一个负距离把和上面正文的空隙顶回去
+  \noindent\textbf{Algorithm\,1: AllPairSearch – bgj3 (Baseline)}\\[-2ex]
+  % 上横线，宽度 0.9\linewidth，厚度 0.8pt，下面再顶回一点
+  \noindent\rule{0.9\linewidth}{0.8pt}\\[-3ex]
+  % 算法主体，只用 algorithmic
+  \begin{algorithmic}[1]
+    % 列表间距全部压小
+    \setlength{\topsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\itemsep}{.3ex}%
+    \setlength{\parskip}{0pt}%
+    \Require A list $L$ of $N_0$ lattice vectors, repetitions $(B_0,B_1,B_2)$, radius $(\alpha_0,\alpha_1,\alpha_2)$, goal norm $l$.
+    \Ensure A list of reducing pairs in $L$.
+    \State $\mathcal{N}\gets\emptyset$
+    \For{$i=0,\dots,B_0-1$}
+      \State Pick a random center $c_0\in S^{n-1}$
+      \State $L_i\gets\{v\in L\mid v\text{ passes }F_{c_0,\alpha_0}\}$
+      \For{$j=0,\dots,B_1/B_0-1$}
+        \State Pick a random center $c_1\in S^{n-1}$
+        \State $L_{ij}\gets\{v\in L_i\mid v\text{ passes }F_{c_1,\alpha_1}\}$
+        \For{$k=0,\dots,B_2/B_1-1$}
+          \State Pick a random center $c_2\in S^{n-1}$
+          \State $L_{ijk}\gets\{v\in L_{ij}\mid v\text{ passes }F_{c_2,\alpha_2}\}$
+          \State $\mathcal{N}\gets\mathcal{N}\cup\{(u,v)\in L_{ijk}^2\mid\|u\pm v\|<l\}$
+        \EndFor
+      \EndFor
+    \EndFor
+    \State \Return $\mathcal{N}$
+  \end{algorithmic}\\[-2ex]
+  % 下横线，和上面一样的宽度/高度
+  \noindent\rule{0.9\linewidth}{0.8pt}
+}
+
+
+    \block{4. Key Results}{
+      \lipsum[1-2]
+      \lipsum[1][1-6]
+      \begin{tikzfigure}
+        \includegraphics[scale=0.8]{XJTLU1.png}
+      \end{tikzfigure}
+    }
+    \block{5. Future Work}{
+      \lipsum[1][1-5]
+    }
+\end{columns}
+
+\block{References}{
+    [1] Chinberg, T., Kalbach, A. LLLAlgorithmforLatticeBasisReduction. Available from: arXiv:2410.22196v2 [math.NT] 20 Nov 2024.
+
+    [2] Williams, R.J. Simple statistical gradient-following algorithms for connectionist reinforcement learning. \textit{Mach Learn} 8, 229–256 (1992). https://doi.org/10.1007/BF00992696
+
+    [3] Zhao, Z., Ding, J. and Yang, B.-Y. (2025). Sieving with Streaming Memory Access. \textit{IACR Transactions on Cryptographic Hardware and Embedded Systems}, 2025(2), 362-384. Available from: https://doi.org/10.46586/tches.v2025.i2.362-384 
+
+}
+
+\end{document}

@@ -1,0 +1,143 @@
+\documentclass[25pt,a0paper,portrait]{tikzposter}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{blindtext}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{adjustbox}
+
+\usetheme{Rays}
+\graphicspath{{Images/}}
+
+\title{AI Methods for Post-Quantum Cryptography}
+\author{
+  Supervisor: Keqin Liu\\
+  Members: Bo Wang, Yuan Cheng, Xingyue Fan, Yongrun Huang, Chang Liu, Jialun Luo, Yexi Ren
+}
+\institute{SurfCode: SURF-2025-0061}
+\date{August 2025}
+
+\begin{document}
+\maketitle
+
+\node[anchor=west,  xshift=-1cm] at (TP@title.west)
+  {\includegraphics[width=10cm]{XJTLU1.png}};
+\node[anchor=east,  xshift= 1cm] at (TP@title.east)
+  {\includegraphics[width=10cm]{XJTLU1.png}};
+
+\block{Abstract}{
+    This poster presents the background and a series of possible evolutionary methods of sieving algorithm (bgj3). We begin with reproducing the original random 
+  filtering method, then introduce a deterministic Hybrid-Sieve to replace the randomness with the algebraic structure of 
+  the dual lattice. Finally, we explore a powerful shift using Reinforcement Learning (RL), where an intelligent agent learns 
+  to produce high quality center sieve vectors. 
+}
+
+\begin{columns}
+  \column{0.55}
+    \block{1. Introduction}{
+      % --- Start of the Poster Section Code ---
+
+
+The security of post-quantum cryptography hinges on the hardness of the \textbf{Shortest Vector Problem (SVP)}. Sieving algorithms are 
+the most powerful tools for solving SVP, but their performance is bottlenecked by a single, critical task: efficiently finding pairs of 
+vectors $(\mathbf{u}, \mathbf{v})$ that combine to form a shorter vector $\mathbf{u} \pm \mathbf{v}$ from a list of billions$: 2^{0.2075n+O(n)}$.
+
+
+\textbf{Our Contribution: A Principled Evolution}
+
+This work charts a clear trajectory, moving from blind randomness towards structured, intelligent search. We demonstrate this evolution through three methodologies:
+
+\begin{enumerate}
+    \item \textbf{Baseline: The Random Sieve}
+    \begin{itemize}
+        \item \textbf{Core Idea:} Filters vectors using random spherical caps.
+        \item \textbf{Represents:} The current "brute-force" state-of-the-art.
+    \end{itemize}
+
+    \item \textbf{Innovation: The Hybrid Sieve}
+    \begin{itemize}
+        \item \textbf{Core Idea:} Replaces randomness with \textbf{structure}. We use vectors from the \textbf{dual lattice} ($\mathcal{L}^*$) to create a deterministic Voronoi partition.
+        \item \textbf{Represents:} A more efficient, reproducible, and lattice-aware algorithm.
+    \end{itemize}
+
+    \item \textbf{Paradigm Shift: The RL-based Sieve}
+    \begin{itemize}
+        \item \textbf{Core Idea:} Elevates the search to an \textbf{intelligent} process. A Reinforcement Learning (RL) agent learns an optimal policy to "walk" on the lattice, actively seeking out shorter vectors.
+        \item \textbf{Represents:} The future of SVP solving—an adaptive and targeted exploration.
+    \end{itemize}
+\end{enumerate}
+
+% --- End of the Poster Section Code ---
+    This progression illustrates a clear path from random searching to structurized and intelligent exploration.
+    }
+
+    \block{3. Key Results}{
+      \blindenumerate[3]
+      \blindtext
+      \blindenumerate[2]
+    }
+    \block{5. Future Work}{
+      \blindtext
+      \blindenumerate[2]
+    }
+
+  \column{0.45}
+\block{2. Method}{%
+  \scriptsize            % 或者 \footnotesize, \small
+  \begin{minipage}{\columnwidth}
+    \begin{algorithm}[H]
+      \caption{AllPairSearch – bgj3 (Baseline)}\label{alg:bgj31}
+      \begin{algorithmic}[1]
+        \Require{A list $L$ of $N_0$ lattice vectors, repetitions $(B_0,B_1,B_2)$, radii $(\alpha_0,\alpha_1,\alpha_2)$, goal norm $l$.}
+        \Ensure{A list of reducing pairs in $L$.}
+        \State $\mathcal{N}\gets\emptyset$
+        \For{$i=0,\dots,B_0-1$}
+          \State Pick a random center $c_0\in S^{n-1}$
+          \State $L_i\gets\{v\in L\mid v\text{ passes }F_{c_0,\alpha_0}\}$
+          \For{$j=0,\dots,B_1/B_0-1$}
+            \State Pick a random center $c_1\in S^{n-1}$
+            \State $L_{ij}\gets\{v\in L_i\mid v\text{ passes }F_{c_1,\alpha_1}\}$
+            \For{$k=0,\dots,B_2/B_1-1$}
+              \State Pick a random center $c_2\in S^{n-1}$
+              \State $L_{ijk}\gets\{v\in L_{ij}\mid v\text{ passes }F_{c_2,\alpha_2}\}$
+              \State $\mathcal{N}\gets\mathcal{N}\cup\{(u,v)\in L_{ijk}^2\mid\|u\pm v\|<l\}$
+            \EndFor
+          \EndFor
+        \EndFor
+        \State \Return $\mathcal{N}$
+      \end{algorithmic}
+    \end{algorithm}
+  \end{minipage}
+}
+    \block{4. Examples}{
+      \blindtext
+      \begin{equation}
+        \int \vec{F}\cdot d\vec{q} = -U
+      \end{equation}
+      \begin{tikzfigure}
+        \includegraphics[scale=0.8]{XJTLU1.png}
+      \end{tikzfigure}
+    }
+    \block{6. Plots}{
+      \begin{tikzfigure}
+        \includegraphics[scale=0.8]{XJTLU1.png}
+      \end{tikzfigure}
+      \begin{tikzfigure}
+        \includegraphics[scale=1.0]{XJTLU1.png}
+      \end{tikzfigure}
+    }
+\end{columns}
+
+\block{References}{
+    [1] Zhao, Z., Ding, J., & Yang, B.-Y. (2025). Sieving with Streaming Memory Access. \textit{IACR Transactions on Cryptographic Hardware and Embedded Systems}, 2025(2), 362-384. Available from: https://doi.org/10.46586/tches.v2025.i2.362-384 
+
+    [2] Chinberg, T., Kalbach, A. LLLAlgorithmforLatticeBasisReduction. Available from: arXiv:2410.22196v2 [math.NT] 20 Nov 2024.
+
+}
+
+\end{document}
