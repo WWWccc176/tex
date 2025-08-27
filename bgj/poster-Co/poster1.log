@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.8.23)  25 AUG 2025 20:13
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.8.23)  27 AUG 2025 21:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -474,6 +474,13 @@ Package: inputenc 2024/02/08 v1.3d Input encoding file
 
 Package inputenc Warning: inputenc package ignored with utf8 based engines.
 
+) (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2024/12/21 v2.1c Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+aer on input line 116.
+ (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/ae/t1aer.fd
+File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
+)) (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/base/textcomp.sty
+Package: textcomp 2024/04/24 v2.1b Standard LaTeX package
 ) (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2025/06/16 v2.17y AMS math features
 \@mathmargin=\skip54
@@ -763,34 +770,30 @@ Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \@vwid@roff=\dimen385
 )
 ==> First Aid for varwidth.sty applied!
-)
-LaTeX Font Info:    Trying to load font information for T1+aer on input line 37.
- (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/ae/t1aer.fd
-File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
-)
-No file poster1.aux.
+) (./poster1.aux)
 \openout1 = `poster1.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 37.
-LaTeX Font Info:    ... okay on input line 37.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 41.
+LaTeX Font Info:    ... okay on input line 41.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -825,24 +828,22 @@ LaTeX Font Info:    ... okay on input line 37.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 41.
 (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 41.
  (d:/TEXlive/texlive/2025/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 37.
+Package hyperref Info: Link coloring OFF on input line 41.
+ (./poster1.out) (./poster1.out)
 \@outlinefile=\write4
 \openout4 = `poster1.out'.
 
-
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
 
 Missing character: There is no 1 ("31) in font nullfont!
 Missing character: There is no = ("3D) in font nullfont!
@@ -851,59 +852,22 @@ File: Images/XJTLU1.png Graphic file (type bmp)
 <Images/XJTLU1.png>
 File: Images/SURFwb.png Graphic file (type bmp)
 <Images/SURFwb.png>
-Missing character: There is no – ("2013) in font aer17!
-Missing character: There is no – ("2013) in font aer17!
-Missing character: There is no – ("2013) in font aer17!
-LaTeX Font Info:    Trying to load font information for TS1+aer on input line 143.
-LaTeX Font Info:    No file TS1aer.fd. on input line 143.
+LaTeX Font Info:    Trying to load font information for TS1+aer on input line 160.
+LaTeX Font Info:    No file TS1aer.fd. on input line 160.
 
 LaTeX Font Warning: Font shape `TS1/aer/m/n' undefined
 (Font)              using `TS1/cmr/m/n' instead
-(Font)              for symbol `textbullet' on input line 143.
+(Font)              for symbol `textbullet' on input line 160.
 
-Missing character: There is no ‐ ("2010) in font aeb10!
-Missing character: There is no ‐ ("2010) in font aer17!
-Missing character: There is no – ("2013) in font aeb10!
-Missing character: There is no ‐ ("2010) in font aer17!
-Missing character: There is no ‐ ("2010) in font aer17!
-./poster1.tex:191: Missing $ inserted.
-<inserted text> 
-                $
-l.191 }
-       
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
 
-./poster1.tex:191: Missing $ inserted.
-<inserted text> 
-                $
-l.191 }
-       
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-Missing character: There is no – ("2013) in font aeb10!
-
-Underfull \hbox (badness 10000) in paragraph at lines 191--191
+Underfull \hbox (badness 10000) in paragraph at lines 220--220
 
  []
 
-
-./poster1.tex:191: LaTeX Error: There's no line here to end.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.191 }
-       
-Your command was ignored.
-Type  I <command> <return>  to replace it with another command,
-or  <return>  to continue without it.
-
-File: Images/XJTLU1.png Graphic file (type bmp)
-<Images/XJTLU1.png>
-Missing character: There is no – ("2013) in font aer17!
+File: Images/1.png Graphic file (type bmp)
+<Images/1.png>
+File: Images/2.png Graphic file (type bmp)
+<Images/2.png>
 
 
 [1
@@ -917,22 +881,16 @@ L3 programming layer <2025-08-13>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-Package rerunfilecheck Warning: File `poster1.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `poster1.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  D41D8CD98F00B204E9800998ECF8427E;0.
+Package rerunfilecheck Info: File `poster1.out' has not changed.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 28537 strings out of 468441
- 572693 string characters out of 5445548
- 1197283 words of memory out of 5000000
- 56482 multiletter control sequences out of 15000+600000
- 675695 words of font info for 107 fonts, out of 8000000 for 9000
+ 28605 strings out of 468441
+ 574002 string characters out of 5445548
+ 1202684 words of memory out of 5000000
+ 56535 multiletter control sequences out of 15000+600000
+ 681442 words of font info for 112 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 117i,10n,121p,497b,1343s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 117i,10n,121p,517b,1301s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on poster1.pdf (1 page).
