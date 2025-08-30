@@ -16,12 +16,24 @@
 \usepackage{hyperref}
 \usepackage{adjustbox}
 
+\usepackage{geometry}
+\geometry{paperwidth=841mm,paperheight=1189mm}
+
+% 第二步：给所有 TikZ picture 加一个整体缩放
+\usepackage{tikz}
+\tikzset{
+  every picture/.append style={
+    scale=0.7071,       % A0→A1 的线性缩放因子 = 1/√2
+    transform shape     % 一定要加，才能对节点、文字也生效
+  }
+}
+
 \usetheme{Rays}
 \graphicspath{{Images/}}
 \title{AI Methods for Post-Quantum Cryptography}
 \author{
   Supervisors: Keqin Liu and Jintai Ding\\
-  Members: Bo Wang, Yuan Cheng, Xingyue Fan, Yongrun Huang, Chang Liu, Jialun Luo, Yexi Ren
+  Members: Yuan Cheng, Xingyue Fan, Yongrun Huang, Chang Liu, Jialun Luo, Yexi Ren, Bo Wang
 }
 \institute{CODE: SURF-2025-0061}
 \date{August 2025}
